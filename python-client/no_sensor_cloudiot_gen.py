@@ -214,10 +214,12 @@ def main():
     i = 1
     while True:
     	#count = count_digits(i)
+    	d = datetime.datetime.utcnow()  # time scanned
+    	
     	data['scanid'] = "scan" + str(i).rjust(6,'0')  # assigned uniquely for every scan
 	data['upc'] = "A80000001" + str(randint(0, 9)) # Universal Product code (UPC)
 	data['hub_device_id'] = "hub0" + str(randint(0, 9)) # represents a hub positioned in the store
-	data['timestamp'] = datetime.datetime.utcnow()  # time scanned
+	data["timestamp"] = d.isoformat("T") + "Z"
 	data['storeid'] = random.choice(['sf-store-01', 'chi-store-02', 'nyc-store-03'])   # id of the store
         
 	# Publish "payload" to the MQTT topic. qos=1 means at least once
