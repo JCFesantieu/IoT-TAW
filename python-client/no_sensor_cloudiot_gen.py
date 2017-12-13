@@ -221,7 +221,7 @@ def main():
 	data['hub_device_id'] = "hub0" + str(randint(0, 9)) # represents a hub positioned in the store
 	data["timestamp"] = d.isoformat("T") + "Z"
 	data['storeid'] = random.choice(['sf-store-01', 'chi-store-02', 'nyc-store-03'])   # id of the store
-    data['event'] = random.choice(['Placed', 'Removed'])   # id of the store
+    	data['event'] = random.choice(['Placed', 'Removed'])   # id of the store
         
 	# Publish "payload" to the MQTT topic. qos=1 means at least once
     	# delivery. Cloud IoT Core also supports qos=0 for at most once
