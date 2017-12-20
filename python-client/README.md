@@ -37,14 +37,14 @@ to publish the data to the Cloud Pub/Sub topic created above.
     
         $sudo pip install -r requirements.txt
 
-8. Send mock data using the no_sensor_cloudiot_gen.py script. It publishes data over MQTT every 2 secs:
+8. Send some Sample data (data/SampleData.json) using the no_sensor_cloudiot_gen.py script. It publishes all 1000 JSON entries to the device's MQTT topic one by one:
 
         $python no_sensor_cloudiot_gen.py --registry_id=iot-taw-registry --project_id=iot-taw-project --device_id=iot-device --algorithm=RS256 --private_key_file=rsa_private.pem
 
-    To see all the command line options the script accepts, use 'python no_sensor_cloudiot_gen.py -h'. It pushes JSON-formatted data in the following format  
+    To see all the command line options the script accepts, use 'python no_sensor_cloudiot_gen.py -h'. It pushes JSON-formatted data in the following format. If you need to generate different sample data, you can use the data/datagen.py script and then use the --json_data_file option to specify the json file which contains your new data
 
-    Publishing message #1: '{'scanid': 'scan000001', 'hub_device_id': 'hub06', 'timestamp': '2017-12-13T18:48:47.762445Z', 'storeid': 'nyc-store-03', 'upc': 'A800000017', 'event': 'Removed'}'   
-    Publishing message #2: '{'scanid': 'scan000002', 'hub_device_id': 'hub09', 'timestamp': '2017-12-13T18:48:49.764968Z', 'storeid': 'sf-store-01', 'upc': 'A800000012', 'event': 'Removed'}'   
-    Publishing message #3: '{'scanid': 'scan000003', 'hub_device_id': 'hub07', 'timestamp': '2017-12-13T18:48:51.767631Z', 'storeid': 'nyc-store-03', 'upc': 'A800000016', 'event': 'Placed'}'   
-    Publishing message #4: '{'scanid': 'scan000004', 'hub_device_id': 'hub03', 'timestamp': '2017-12-13T18:48:53.770235Z', 'storeid': 'chi-store-02', 'upc': 'A800000018', 'event': 'Placed'}'
+    Publishing message #997: '{u'scanid': u'scan000997', u'hub_device_id': u'hub3', u'timestamp': u'2017-12-20T01:51:03.755048Z', u'storeid': u'sfo-store-01', u'upc': u'A800000044', u'event': u'Placed'}'   
+    Publishing message #998: '{u'scanid': u'scan000998', u'hub_device_id': u'hub5', u'timestamp': u'2017-12-20T01:51:13.761008Z', u'storeid': u'nyc-store-03', u'upc': u'A800000021', u'event': u'Placed'}'   
+    Publishing message #999: '{u'scanid': u'scan000999', u'hub_device_id': u'hub6', u'timestamp': u'2017-12-20T01:51:14.766344Z', u'storeid': u'chi-store-02', u'upc': u'A800000002', u'event': u'Removed'}'   
+    Publishing message #1000: '{u'scanid': u'scan001000', u'hub_device_id': u'hub6', u'timestamp': u'2017-12-20T01:51:14.768079Z', u'storeid': u'nyc-store-03', u'upc': u'A800000025', u'event': u'Removed'}'
 

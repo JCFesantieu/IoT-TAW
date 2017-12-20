@@ -31,8 +31,8 @@ from random import randint
 import json
 import jwt
 import paho.mqtt.client as mqtt
-
-infobase = "/home/pi/device-info"
+import csv
+import numpy as np
 
 def get_ip_address():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -93,7 +93,7 @@ def on_disconnect(unused_client, unused_userdata, rc):
 
 def on_publish(unused_client, unused_userdata, unused_mid):
     """Paho callback when a message is sent to the broker."""
-    print('on_publish')
+    #print('on_publish')
 
 
 def get_client(
@@ -188,7 +188,10 @@ def parse_command_line_args():
             default=20,
             type=int,
             help=('Expiration time, in minutes, for JWT tokens.'))
-
+    parser.add_argument(
+            '--json_data_file',
+            default='data/SampleData.json',
+            help='Sample JSON file to stream the data from.')
     return parser.parse_args()
 
 
@@ -210,27 +213,17 @@ def main():
         args.private_key_file, args.algorithm, args.ca_certs,
         args.mqtt_bridge_hostname, args.mqtt_bridge_port)
 
-    data = {}
-    i = 1
-    while True:
-    	#count = count_digits(i)
-    	d = datetime.datetime.utcnow()  # time scanned
-    	
-    	data['scanid'] = "scan" + str(i).rjust(6,'0')  # assigned uniquely for every scan
-	data['upc'] = "A80000001" + str(randint(0, 9)) # Universal Product code (UPC)
-	data['hub_device_id'] = "hub0" + str(randint(0, 9)) # represents a hub positioned in the store
-	data["timestamp"] = d.isoformat("T") + "Z"
-	data['storeid'] = random.choice(['sf-store-01', 'chi-store-02', 'nyc-store-03'])   # id of the store
-    	data['event'] = random.choice(['Placed', 'Removed'])   # id of the store
-        
+    fr = open(args.json_data_file, 'r')
+    i = 1 
+    for line in fr:
+	data = json.loads(line)   
 	# Publish "payload" to the MQTT topic. qos=1 means at least once
     	# delivery. Cloud IoT Core also supports qos=0 for at most once
     	# delivery.
-	payload = '{}'.format(data)          # python dict to string conversion
+    	payload = '{}'.format(data)          # python dict to string conversion
     	print('Publishing message #{}: \'{}\''.format(i, payload))
     	client.publish(mqtt_topic, payload, qos=1)
-	i += 1
-    	time.sleep(2)
+        i += 1
 
     # End the network loop and finish.
     client.loop_stop()
