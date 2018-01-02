@@ -29,6 +29,7 @@ from random import randint
 import json
 import numpy as np
 
+
 def main():
     i = 1
     items_removed = 0
@@ -37,53 +38,77 @@ def main():
     avail = {}
 
     while i <= 1000:
-	data = {}
-    	data['scanid'] = "scan" + str(i).rjust(6,'0')  # assigned uniquely for every scan
-    	d = datetime.datetime.utcnow()  # time scanned
-    	data['timestamp'] = d.isoformat("T") + "Z"
-	event_type = ['Placed', 'Removed']
-	event = np.random.choice(event_type, p=[0.7, 0.3])
-	data['event'] = event
-	
-	if event == 'Placed':
-	    data['upc'] = "A8000000" + str(randint(1, 50)).rjust(2,'0')  # Universal Product code (UPC)
-            data['hub_device_id'] = "hub" + str(randint(0, 9)) # represents a hub positioned in the store
-	    data['storeid'] = random.choice(['sfo-store-01', 'chi-store-02', 'nyc-store-03'])   # id of the store
-	    # Mark the item as available for checkout
-	    item = data['scanid']
-	    avail['item'] = 1
-	    print "Entry placed on the shelf = [%s, %s, %s]" % (data['upc'], data['hub_device_id'], data['storeid'])
-	else:
-            fr = open(json_file, 'r')
-	    items_removed += 1
-            num = sum(1 for line in fr)
-	    if num <= 0:
-		continue
-       	    else:
-		fr.seek(0,0)
-            	for line in fr:
-		    entry = json.loads(line)
-		    # Check if the item is available for checkout
-		    item = entry['scanid']
-		    if avail['item'] == 0:   # Already checked out
-			continue
-		    else:                    # Available for checkout
-                    	probability = random.random()
-                    	if probability >= 0.5:    # Flip a coin to decide if this item should be removed
-				data['upc'] = entry['upc']
-            			data['hub_device_id'] = entry['hub_device_id']
-            			data['storeid'] = entry['storeid']
-				print "Entry removed from shelf = [%s, %s, %s]" % (data['upc'], data['hub_device_id'], data['storeid'])
-                        	break
-	    	fr.close()
+        data = {}
+        data['scanid'] = "scan" + str(i).rjust(6, '0')  # assigned uniquely for every scan
+        d = datetime.datetime.utcnow()  # time scanned
+        days_offset = [1, 3, 5]
+        seconds_offset = [30, 90, 120]
+        storeDetails = {"sfo-store-01":"37.791660,-122.403788" , "chi-store-02":"41.879301,-87.655319","nyc-store-03":"40.753001,-73.988931"  } #lat lang details of the store
+        days = np.random.choice(days_offset, p=[0.6, 0.2, 0.2])
+        seconds = np.random.choice(seconds_offset, p=[0.5, 0.3, 0.2])
+        deltadp = datetime.timedelta(days=days)  # time placed
+        deltads = datetime.timedelta(seconds=seconds)
+        dp = d - deltadp # time placed
+        dp = dp + deltads
+        ds = d + deltads
+        data['timestamp'] = dp.isoformat("T") + "Z"
+        event_type = ['Placed', 'Removed']
+        event = np.random.choice(event_type, p=[0.7, 0.3])
+        data['event'] = event
 
-	j = json.dumps(data)
+        if event == 'Placed':
+            data['upc'] = "A8000000" + str(randint(1, 50)).rjust(2, '0')  # Universal Product code (UPC)
+            data['hub_device_id'] = "hub" + str(randint(0, 9))  # represents a hub positioned in the store
+            data['storeid'] = random.choice(['sfo-store-01', 'chi-store-02', 'nyc-store-03'])  # id of the store
+            latlong = storeDetails[data['storeid']]
+            print latlong
+            data['latlong'] = latlong
+            data['count'] = 1
+
+            # Mark the item as available for checkout
+            item = data['scanid']
+            avail['item'] = 1
+            print "Entry placed on the shelf = [%s, %s, %s]" % (data['upc'], data['hub_device_id'], data['storeid'])
+        else:
+            fr = open(json_file, 'r')
+            items_removed += 1
+            num = sum(1 for line in fr)
+            if num <= 0:
+                continue
+            else:
+                fr.seek(0, 0)
+                for line in fr:
+                    entry = json.loads(line)
+                    # Check if the item is available for checkout
+                    item = entry['scanid']
+                    if avail['item'] == 0:  # Already checked out
+                        continue
+                    else:  # Available for checkout
+                        probability = random.random()
+                        if probability >= 0.5:  # Flip a coin to decide if this item should be removed
+                            data['upc'] = entry['upc']
+                            data['hub_device_id'] = entry['hub_device_id']
+                            data['storeid'] = entry['storeid']
+                            data['latlong'] = latlong
+                            data['scanid'] = entry['scanid'] # Match the Scand Id to Placed Scan Id
+                            data['timestamp'] = ds.isoformat("T") + "Z"
+                            data['count'] = 1
+
+                            print "Entry removed from shelf = [%s, %s, %s]" % (
+                            data['upc'], data['hub_device_id'], data['storeid'])
+                            break
+                fr.close()
+
+        j = json.dumps(data)
         fh.write(j + '\n')
-	i += 1
-    	time.sleep(randint(0, 10))
+        i += 1
+        #time.sleep(randint(0, 10)) (Add this to introduce delay
+
 
     fh.close()
     print('Finished.')
 
+
 if __name__ == '__main__':
     main()
+
