@@ -55,15 +55,14 @@ def main():
         event_type = ['Placed', 'Removed']
         event = np.random.choice(event_type, p=[0.7, 0.3])
         data['event'] = event
+        data['count'] = 1
 
         if event == 'Placed':
             data['upc'] = "A8000000" + str(randint(1, 50)).rjust(2, '0')  # Universal Product code (UPC)
             data['hub_device_id'] = "hub" + str(randint(0, 9))  # represents a hub positioned in the store
             data['storeid'] = random.choice(['sfo-store-01', 'chi-store-02', 'nyc-store-03'])  # id of the store
             latlong = storeDetails[data['storeid']]
-            print latlong
             data['latlong'] = latlong
-            data['count'] = 1
 
             # Mark the item as available for checkout
             item = data['scanid']
@@ -81,29 +80,24 @@ def main():
                     entry = json.loads(line)
                     # Check if the item is available for checkout
                     item = entry['scanid']
-                    if avail['item'] == 0:  # Already checked out
-                        continue
-                    else:  # Available for checkout
+                    if avail['item'] == 1:  # Available for check out
                         probability = random.random()
                         if probability >= 0.5:  # Flip a coin to decide if this item should be removed
                             data['upc'] = entry['upc']
                             data['hub_device_id'] = entry['hub_device_id']
                             data['storeid'] = entry['storeid']
+			    latlong = storeDetails[data['storeid']]
                             data['latlong'] = latlong
                             data['scanid'] = entry['scanid'] # Match the Scand Id to Placed Scan Id
                             data['timestamp'] = ds.isoformat("T") + "Z"
-                            data['count'] = 1
-
                             print "Entry removed from shelf = [%s, %s, %s]" % (
                             data['upc'], data['hub_device_id'], data['storeid'])
                             break
-                fr.close()
+            fr.close()
 
         j = json.dumps(data)
         fh.write(j + '\n')
         i += 1
-        #time.sleep(randint(0, 10)) (Add this to introduce delay
-
 
     fh.close()
     print('Finished.')
