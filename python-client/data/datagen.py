@@ -72,7 +72,7 @@ def main():
             fr = open(json_file, 'r')
             items_removed += 1
             num = sum(1 for line in fr)
-            if num <= 0:
+            if num <= 0:    # File is empty
                 continue
             else:
                 fr.seek(0, 0)
@@ -83,7 +83,8 @@ def main():
                     if avail['item'] == 1:  # Available for check out
                         probability = random.random()
                         if probability >= 0.5:  # Flip a coin to decide if this item should be removed
-                            data['upc'] = entry['upc']
+                            avail['item'] = 0
+		            data['upc'] = entry['upc']
                             data['hub_device_id'] = entry['hub_device_id']
                             data['storeid'] = entry['storeid']
 			    latlong = storeDetails[data['storeid']]
@@ -97,7 +98,9 @@ def main():
 
         j = json.dumps(data)
         fh.write(j + '\n')
+        fh.flush()
         i += 1
+        time.sleep(.100)
 
     fh.close()
     print('Finished.')
