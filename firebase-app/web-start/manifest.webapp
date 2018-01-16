@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "name": "Retail Store 360",
+  "launch_path": "/index.html",
+  "description": "Chat with friends using Firebase 2.0",
+  "developer": {
+    "name": "Google inc.",
+    "url": "https://firebase.google.com"
+  },
+  "installs_allowed_from": [
+    "*"
+  ],
+  "default_locale": "en",
+  "permissions": {
+  },
+  "locales": {
+    "en": {
+      "name": "Retail Store 360",
+      "description": "A real-time inventory application for in-store retail using Firebase & Cloud IoT Core"
+    }
+  }
+}
