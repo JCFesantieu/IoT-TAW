@@ -216,11 +216,11 @@ def main():
     fr = open(args.json_data_file, 'r')
     i = 1 
     for line in fr:
-	data = json.loads(line)   
-	# Publish "payload" to the MQTT topic. qos=1 means at least once
+	    data = json.loads(line)   
+	    # Publish "payload" to the MQTT topic. qos=1 means at least once
     	# delivery. Cloud IoT Core also supports qos=0 for at most once
     	# delivery.
-    	payload = '{}'.format(data)          # python dict to string conversion
+        payload = json.dumps(data)    # JSON object to string conversion
     	print('Publishing message #{}: \'{}\''.format(i, payload))
     	client.publish(mqtt_topic, payload, qos=1)
         i += 1
