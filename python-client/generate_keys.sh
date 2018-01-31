@@ -1,4 +1,4 @@
 sudo apt-get install -y wget openssl python-pip
-openssl genrsa -out rsa_private.pem 2048
-openssl rsa -in rsa_private.pem -pubout -out rsa_cert.pem
-wget https://pki.goog/roots.pem
+openssl ecparam -genkey -name prime256v1 -noout -out ec_private.pem
+openssl ec -in ec_private.pem -pubout -out ec_public.pem
+wget -N https://pki.goog/roots.pem
