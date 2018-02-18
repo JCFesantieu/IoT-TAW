@@ -282,7 +282,24 @@
 =
 	<script src="scripts/demo.js"></script>
     <!-- Place Firebase Snippet below this line -->
-   
+    <script src="https://www.gstatic.com/firebasejs/4.8.2/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-firestore.js"></script>
+    
+  
+    <script>
+  		// Initialize Firebase
+
+		  var config = {
+		    apiKey: "AIzaSyBrqbf3hzK7_lMdsNFhV1tbPGVy42emdaY",
+		    authDomain: "iotcore-store360.firebaseapp.com",
+		    databaseURL: "https://iotcore-store360.firebaseio.com",
+		    projectId: "iotcore-store360",
+		    storageBucket: "iotcore-store360.appspot.com",
+		    messagingSenderId: "52188433095"
+		  };
+		  firebase.initializeApp(config);
+	</script>
+	
 	
 	
 	
@@ -294,8 +311,50 @@
             demo.initGoogleMaps();
         });
     
+      
 
-	
+		// Initialize Cloud Firestore through Firebase
+		var db = firebase.firestore();
+		
+		db.collection("device-events").where("storeid", "==", "chi-store-02")
+    		.onSnapshot(function(snapshot) {
+        		snapshot.docChanges.forEach(function(change) {
+	            if (change.type === "added") {
+	                console.log("New deviceEvent: ", change.doc.data());
+	            }
+	            
+	            query = db.collection("device-events").where("storeid", "==", "chi-store-02").where("hub_device_id", "==", "hub0")
+	              .get()
+	              .then(function(querySnapshot) {
+    				console.log("CHI-STORE HUB0:"+querySnapshot.size);
+    				document.getElementById("hub1").textContent=querySnapshot.size;
+			    });
+			    
+			     query = db.collection("device-events").where("storeid", "==", "chi-store-02").where("hub_device_id", "==", "hub1")
+	              .get()
+	              .then(function(querySnapshot) {
+    				console.log("CHI-STORE HUB1:"+querySnapshot.size);
+    				document.getElementById("hub2").textContent=querySnapshot.size;
+			    });
+			    
+			     query = db.collection("device-events").where("storeid", "==", "chi-store-02").where("hub_device_id", "==", "hub2")
+	              .get()
+	              .then(function(querySnapshot) {
+    				console.log("CHI-STORE HUB2:"+querySnapshot.size);
+    				document.getElementById("hub3").textContent=querySnapshot.size;
+			    });
+			    
+			     query = db.collection("device-events").where("storeid", "==", "chi-store-02").where("hub_device_id", "==", "hub3")
+	              .get()
+	              .then(function(querySnapshot) {
+    				console.log("CHI-STORE HUB3:"+querySnapshot.size);
+    				document.getElementById("hub4").textContent=querySnapshot.size;
+			    });
+	          
+        	});
+    	});
+    	
+    	
     </script>
 
 </html>
