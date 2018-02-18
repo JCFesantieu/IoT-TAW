@@ -21,7 +21,7 @@ to publish the data to the Cloud Pub/Sub topic created above.
             --region=us-central1 \
             --event-pubsub-topic=projects/iot-taw-project/topics/iot-data
 
-5. Use the `generate_keys.sh` script to generate your signing keys. This script creates a RS256 Public/Private Key pair (rsa_cert.pem/rsa_private.pem) and also retrieves the Google root certificate (roots.pem) in the current directory
+5. Use the `generate_keys.sh` script to generate your signing keys. This script creates a ES256 Public/Private Key pair (ec_public.pem/ec_private.pem) and also retrieves the Google root certificate (roots.pem) in the current directory
 
         $./generate_keys.sh
 
@@ -31,20 +31,23 @@ to publish the data to the Cloud Pub/Sub topic created above.
             --project=iot-taw-project \
             --region=us-central1 \
             --registry=iot-taw-registry \
-            --public-key path=rsa_cert.pem,type=rs256
+            --public-key path=ec_public.pem,type=es256
 
 7. Install the dependencies needed to run the python client:
     
         $sudo pip install -r requirements.txt
 
-8. Send some Sample data (data/SampleData.json) using the no_sensor_cloudiot_gen.py script. It publishes all 1000 JSON entries to the device's MQTT topic one by one:
+8. Send the mock data (data/SampleData.json) using the no_sensor_cloudiot_gen.py script. This publishes 1000 JSON-formatted messages to the device's MQTT topic one by one:
 
-        $python no_sensor_cloudiot_gen.py --registry_id=iot-taw-registry --project_id=iot-taw-project --device_id=iot-device --algorithm=RS256 --private_key_file=rsa_private.pem
+        $python no_sensor_cloudiot_gen.py --registry_id=iot-taw-registry --project_id=iot-taw-project --device_id=iot-device --algorithm=ES256 --private_key_file=ec_private.pem
 
-    To see all the command line options the script accepts, use 'python no_sensor_cloudiot_gen.py -h'. It pushes JSON-formatted data in the following format. If you need to generate different sample data, you can use the data/datagen.py script and then use the --json_data_file option to specify the json file which contains your new data
+    To see all the command line options the script accepts, use 'python no_sensor_cloudiot_gen.py -h'. If you need to generate different mock data, you can use the data/datagen.py script and then use the --json_data_file option to specify the json file which contains your new data.
+    The script pushes JSON-formatted data as follows.
 
-    Publishing message #997: '{u'scanid': u'scan000997', u'hub_device_id': u'hub3', u'timestamp': u'2017-12-20T01:51:03.755048Z', u'storeid': u'sfo-store-01', u'upc': u'A800000044', u'event': u'Placed'}'   
-    Publishing message #998: '{u'scanid': u'scan000998', u'hub_device_id': u'hub5', u'timestamp': u'2017-12-20T01:51:13.761008Z', u'storeid': u'nyc-store-03', u'upc': u'A800000021', u'event': u'Placed'}'   
-    Publishing message #999: '{u'scanid': u'scan000999', u'hub_device_id': u'hub6', u'timestamp': u'2017-12-20T01:51:14.766344Z', u'storeid': u'chi-store-02', u'upc': u'A800000002', u'event': u'Removed'}'   
-    Publishing message #1000: '{u'scanid': u'scan001000', u'hub_device_id': u'hub6', u'timestamp': u'2017-12-20T01:51:14.768079Z', u'storeid': u'nyc-store-03', u'upc': u'A800000025', u'event': u'Removed'}'
+    	Publishing message #1: '{"count": 1, "scanid": "scan000001", "hub_device_id": "hub8", "timestamp": "2017-12-30T20:42:26.761338Z", "storeid": "chi-store-02", "upc": "A800000011", "latlong": "41.879301,-87.655319", "event": "Placed"}'    
+    	Publishing message #2: '{"count": 1, "scanid": "scan000002", "hub_device_id": "hub3", "timestamp": "2018-01-03T20:43:57.077348Z", "storeid": "nyc-store-03", "upc": "A800000039", "latlong": "40.753001,-73.988931", "event": "Placed"}'    
+    	...    
+    	Publishing message #1000: '{"count": 1, "scanid": "scan001000", "hub_device_id": "hub7", "timestamp": "2017-12-30T20:44:33.667104Z", "storeid": "sfo-store-01", "upc": "A800000014", "latlong": "37.791660,-122.403788", "event": "Placed"}'   
+    	Finished.
+
 
