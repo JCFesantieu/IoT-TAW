@@ -41,7 +41,7 @@ sudo pip install -r requirements.txt
 bq mk -d --data_location US --default_table_expiration 3600 --description "Inventory dataset" $projectId:inventory
 bq mk -t --expiration 3600 --description "IOTtable" $projectId:inventory.iottable count:INTEGER,scanid:STRING,hub_device_id:STRING,timestamp:STRING,storeid:STRING,upc:STRING,latlong:STRING,event:STRING
 
-gcloud beta dataflow jobs run dataflow_job --gcs-location gs://dataflow-templates/latest/PubSub_to_BigQuery --parameters inputTopic=projects/iot-taw-188222/topics/iot-data,outputTableSpec=iot-taw-188222:iot_bq.iottable
+gcloud beta dataflow jobs run dataflow_job --gcs-location gs://dataflow-templates/latest/PubSub_to_BigQuery --parameters inputTopic=projects/iot-taw-188222/topics/iot-data,outputTableSpec=iot-taw-188222:inventory.iottable
 	
 # Execute the python client to send mock data to IOT Core. This streams the data/SampleData.json# line by line to the MQTT device topic '/devices/iot-device/events'
 python no_sensor_cloudiot_gen.py \
