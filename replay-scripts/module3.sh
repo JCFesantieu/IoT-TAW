@@ -53,11 +53,11 @@ gsutil mb gs://iot-taw
 bq mk -d --data_location US --default_table_expiration 3600 --description "Inventory dataset" $projectId:inventory
 bq mk -t --expiration 3600 --description "IOTtable" $projectId:inventory.iottable count:INTEGER,scanid:STRING,hub_device_id:STRING,timestamp:STRING,storeid:STRING,upc:STRING,latlong:STRING,event:STRING
 
-gcloud  projects add-iam-policy-binding $projectId \
-	--member=user:$account \
-	--role=roles/dataflow.admin
+#gcloud  projects add-iam-policy-binding $projectId \
+#	--member=user:$account \
+#	--role=roles/dataflow.admin
 
-gcloud beta dataflow jobs run dataflow_job --gcs-location gs://dataflow-templates/latest/PubSub_to_BigQuery --parameters inputTopic=projects/$projectId/topics/iot-data,outputTableSpec=iot-taw-188222:inventory.iottable
+gcloud beta dataflow jobs run dataflow_job --gcs-location gs://dataflow-templates/latest/PubSub_to_BigQuery --parameters inputTopic=projects/$projectId/topics/iot-data,outputTableSpec=$projectId:inventory.iottable
 
 
 	
