@@ -5,6 +5,9 @@ echo $projectId
 # Switch to IoT-TAW/python-client Directory
 cd ../python-client
 
+#Enable IOT core 
+gcloud services enable cloudiot.googleapis.com
+
 # Create a Pub/Sub topic & a subscription for that topic
 gcloud pubsub topics create projects/$projectId/topics/iot-data
 gcloud pubsub subscriptions create iot-sub \
@@ -19,16 +22,16 @@ gcloud projects add-iam-policy-binding $projectId \
 	--role=roles/pubsub.publisher
 
 # Create a device registry
-gcloud beta iot registries create iot-taw \
+gcloud iot registries create iot-taw \
 	--project=$projectId \
 	--region=us-central1 \
-	--event-pubsub-topic=projects/$projectId/topics/iot-data
+	--event-notification-config=topic=projects/$projectId/topics/iot-data
 
 # Generate the private/public key pair & Google's root cert (roots.pem)
 ./generate_keys.sh
 
 # Add a device to the registry
-gcloud beta iot devices create iot-device \
+gcloud iot devices create iot-device \
 	--project=$projectId \
 	--region=us-central1 \
 	--registry=iot-taw \
