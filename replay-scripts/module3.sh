@@ -2,8 +2,13 @@
 projectId=$(gcloud config list --format 'value(core.project)')
 echo $projectId
 
+account=$(gcloud config list --format 'value(core.account)')
+echo $account
+
 # Switch to IoT-TAW/python-client Directory
 cd ../python-client
+
+gcloud services enable cloudiot.googleapis.com
 
 # Create a Pub/Sub topic & a subscription for that topic
 gcloud pubsub topics create projects/$projectId/topics/iot-data
@@ -37,11 +42,24 @@ gcloud beta iot devices create iot-device \
 # Install the dependencies reqd to execute the python client
 sudo pip install -r requirements.txt
 
+gcloud services enable dataflow.googleapis.com
 
+
+#Create GCS bucket
+gsutil mb gs://iot-taw
+
+
+#Create Bigquery dataset and table
 bq mk -d --data_location US --default_table_expiration 3600 --description "Inventory dataset" $projectId:inventory
 bq mk -t --expiration 3600 --description "IOTtable" $projectId:inventory.iottable count:INTEGER,scanid:STRING,hub_device_id:STRING,timestamp:STRING,storeid:STRING,upc:STRING,latlong:STRING,event:STRING
 
-gcloud beta dataflow jobs run dataflow_job --gcs-location gs://dataflow-templates/latest/PubSub_to_BigQuery --parameters inputTopic=projects/iot-taw-188222/topics/iot-data,outputTableSpec=iot-taw-188222:inventory.iottable
+gcloud  projects add-iam-policy-binding $projectId \
+	--member=user:$account \
+	--role=roles/dataflow.admin
+
+gcloud beta dataflow jobs run dataflow_job --gcs-location gs://dataflow-templates/latest/PubSub_to_BigQuery --parameters inputTopic=projects/$projectId/topics/iot-data,outputTableSpec=iot-taw-188222:inventory.iottable
+
+
 	
 # Execute the python client to send mock data to IOT Core. This streams the data/SampleData.json# line by line to the MQTT device topic '/devices/iot-device/events'
 python no_sensor_cloudiot_gen.py \
