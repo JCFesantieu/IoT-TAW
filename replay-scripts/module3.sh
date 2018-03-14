@@ -46,7 +46,7 @@ gcloud services enable dataflow.googleapis.com
 
 
 #Create GCS bucket
-gsutil mb gs://iot-taw
+gsutil mb gs://$projectId-iot-taw
 
 
 #Create Bigquery dataset and table
